@@ -33,7 +33,7 @@ namespace CalastoneTextParser.Services.FilterService
             var startPos = 0;
             while (!_stream.EndOfStream)
             {
-                charsInBuffer = _stream.Read(buffer, startPos, bufferSize - startPos) + startPos;
+                charsInBuffer = TryRead(bufferSize, buffer, startPos);
                 var bufferPos = 0;
                 while (bufferPos < charsInBuffer)
                 {
@@ -55,6 +55,19 @@ namespace CalastoneTextParser.Services.FilterService
                     // Increment passed the separating character
                     bufferPos++;
                 }
+            }
+        }
+
+        private int TryRead(int bufferSize, char[] buffer, int startPos)
+        {
+            try
+            {
+                return _stream.Read(buffer, startPos, bufferSize - startPos) + startPos;
+            }
+            catch (Exception)
+            {
+                // Log exception, maybe rethrow our own that wraps it.
+                return -1;
             }
         }
 
