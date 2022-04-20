@@ -7,10 +7,11 @@ using System.Threading.Tasks;
 
 namespace CalastoneTextParser.Services.FilterService
 {
-    internal class StreamFilterService : IFilterService
+    internal class StreamFilterService : IFilterService, IDisposable
     {
         private readonly StreamReader _stream;
         private readonly int _bufferSize;
+        private bool _disposed;
 
         public StreamFilterService(StreamReader stream)
             : this(stream, 4096)
@@ -104,6 +105,21 @@ namespace CalastoneTextParser.Services.FilterService
         private bool IsLowerCaseChar(char v)
         {
             return (v >= 'a' && v <= 'z');
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!_disposed)
+            {
+                _stream.Dispose();
+                _disposed = true;
+            }
+        }
+
+        public void Dispose()
+        {
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
         }
     }
 }
